@@ -1,6 +1,5 @@
 /*
 	Programme cryptage/decryptage by Skull & Bones
-	Version gérant le decryptage avec mdp pour minuscules pour l'instant <3
 
 						 		  ______   ___ ___  __    __  __        __
 								 /\     \ |\  \\  \|\ \  |\ \|\ \      |\ \
@@ -142,7 +141,11 @@ void cryptage()
 	int nombre2 = 0;
 	int a = 0, b = 1;
 	char password[200];
-	int ascii = 0;
+	unsigned int ascii = 0;
+
+	char alphabetMin[30] = "abcdefghijklmnopqrstuvwxyz\0";
+	char alphabetMax[30] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ\0";	
+	char symboles[30] = "123456789 -!().\'\"?/*+=:,\0";
 
 	unsigned int testNombre = 50000000;
 	unsigned int nombreAscii = 0;
@@ -178,7 +181,7 @@ void cryptage()
 		{
 			do // Tant que ce n'est pas un nombre
 			{
-				printf("Entrez un chiffre pour crypter (entre 0 et 250) : ");
+				printf("Entrez un chiffre pour crypter (entre 0 et 100) : ");
 				fgets(texte, sizeof texte, stdin); // Saisi nombre
 
 				clean(texte); // Enlève le retour à la ligne
@@ -234,6 +237,11 @@ void cryptage()
 		if(nombreOk == 0)
 		{
 			printf("Erreur... Veuillez choisir un mot de passe et un nombre différent !\n\n");
+		}
+
+		else
+		{
+			printf("Ascii : %d\n\n", ascii);
 		}
 
 	} while (nombreOk != 1);
@@ -572,7 +580,166 @@ void cryptage()
 		i++;
 	}
 
-	printf("%s\n", texte);
+	// Début deuxième cryptage avec mot de passe
+
+	// Initialisation des variables
+	// Déclarations des variables servant à ce cryptage
+
+	i = 0;
+	n = 0;
+
+	int k = 0, l = 0;
+	int alphabet = 0, caractere = 0;
+	unsigned int asciiDeux = 0;
+
+	asciiDeux = ascii; // Variable servant à toujours avoir une save de ascii (ascii devant être modifié)
+
+	while(texte[i] != '\0') // Boucle pour avoir le nombre de caractères de texte
+	{
+		i++;
+	}
+
+	while(n != i)  // Tant qu'on à pas fait chaque caractère de la phrase à crypté
+	{
+		alphabet = 0; // Initialisation
+
+		while(alphabet != 26)
+		{
+			if(texte[n] == alphabetMin[alphabet]) // Si le caractère est minuscule
+			{
+				caractere = 1; // On met la variable à 1 -> pour les minuscules
+			}
+
+			alphabet++;
+		}
+
+		if(caractere != 1) // Si le caractère n'est pas minuscule
+		{
+			alphabet = 0;
+
+			while(alphabet != 26)
+			{
+				if(texte[n] == alphabetMax[alphabet]) // Si le caractère est en majuscule
+				{
+					caractere = 2; // On met la variable à 2 -> majuscules
+				}
+
+				alphabet++;
+			}
+		}
+
+		if(caractere != 1 && caractere != 2) // Si le caractère n'est ni minuscule ni majuscule
+		{
+			alphabet = 0;
+
+			while(alphabet != 24)
+			{
+				if(texte[n] == symboles[alphabet]) // Si c'est un symbole
+				{
+					caractere = 3; // On met la variable à 3 -> symboles
+				}
+
+				alphabet++;
+			}
+		}
+
+		switch(caractere) // On vérifie la variable
+		{
+			case 1: // Si minuscule
+
+				k = 0;
+				l = 0;
+
+				while(texte[n] != alphabetMin[l] && alphabetMin[l] != '\0')
+				{
+
+					l++;
+				}
+
+				k = k + l;
+
+				while(ascii != 0)
+				{
+					texte[n] = alphabetMin[k];
+
+					k++;
+
+					if(k == 26)
+					{
+						k = 0;
+					}
+
+					ascii--;
+				}
+				break;
+			case 2: // Si le caractère est en majuscule
+
+				k = 0;
+				l = 0;
+
+				while(texte[n] != alphabetMax[l] && alphabetMax[l] != '\0')
+				{
+
+					l++;
+				}
+
+				k = k + l;
+
+				while(ascii != 0)
+				{
+					texte[n] = alphabetMax[k];
+
+					k++;
+
+					if(k == 26)
+					{
+						k = 0;
+					}
+
+					ascii--;
+				}
+				break;
+			case 3: // Si le caractère est un symbole
+
+				k = 0;
+				l = 0;
+
+				while(texte[n] != symboles[l] && symboles[l] != '\0')
+				{
+
+					l++;
+				}
+
+				k = k + l;
+
+				while(ascii != 0)
+				{
+					texte[n] = symboles[k];
+
+					k++;
+
+					if(k == 24)
+					{
+						k = 0;
+					}
+
+					ascii--;
+				}
+				break;
+
+			// Si caractère inconnue on ne change rien (on pourrait rajouter un default pour mais flemme)
+		}
+
+		ascii = asciiDeux; // On remet ascii comme au début
+
+		n++;
+
+		caractere = 0; // Remet la variable caractère à 0 (Obvious is obvious)
+	}
+
+	printf("%s\n", texte); // Affiche la phrase décryptée
+
+	// Fin deuxième cryptage avec mot de passe
 
 	printf("===============================================================================\n\n");
 
@@ -621,7 +788,7 @@ void decryptage() // Fonction decryptage
 	int nombre3 = 0;	
 	int nombre2 = 0;
 	int a = 0, b = 1;
-	int ascii = 0;
+	unsigned int ascii = 0;
 	int fichierDecryptage = 0;
 
 	char alphabetMin[30] = "abcdefghijklmnopqrstuvwxyz\0";
@@ -664,7 +831,7 @@ void decryptage() // Fonction decryptage
 		{
 			do // Tant que ce n'est pas un nombre
 			{
-				printf("Entrez un chiffre pour décrypter (entre 0 et 250) : ");
+				printf("Entrez un chiffre pour décrypter (entre 0 et 100) : ");
 				fgets(texte, sizeof texte, stdin); // Saisi nombre
 
 				clean(texte); // Enlève le retour à la ligne
@@ -901,6 +1068,167 @@ void decryptage() // Fonction decryptage
 
 	printf("\n===============================================================================\n");
 	printf("\t\t\t     ===== RESULTAT =====\n\n");
+
+	// Début deuxième decryptage avec mot de passe
+
+	// Initialisation des variables
+	// Déclarations des variables servant à ce decryptage
+
+	i = 0;
+	n = 0;
+
+	int k = 0, l = 0;
+	int alphabet = 0, caractere = 0;
+	unsigned int asciiDeux = 0;
+
+	asciiDeux = ascii; // Variable servant à toujours avoir une save de ascii (ascii devant être modifié)
+
+	while(texte[i] != '\0') // Boucle pour avoir le nombre de caractères de texte
+	{
+		i++;
+	}
+
+	while(n != i)  // Tant qu'on à pas fait chaque caractère de la phrase à crypté
+	{
+		alphabet = 0; // Initialisation
+
+		while(alphabet != 26)
+		{
+			if(texte[n] == alphabetMin[alphabet]) // Si le caractère est minuscule
+			{
+				caractere = 1; // On met la variable à 1 -> pour les minuscules
+			}
+
+			alphabet++;
+		}
+
+		if(caractere != 1) // Si le caractère n'est pas minuscule
+		{
+			alphabet = 0;
+
+			while(alphabet != 26)
+			{
+				if(texte[n] == alphabetMax[alphabet]) // Si le caractère est en majuscule
+				{
+					caractere = 2; // On met la variable à 2 -> majuscules
+				}
+
+				alphabet++;
+			}
+		}
+
+		if(caractere != 1 && caractere != 2) // Si le caractère n'est ni minuscule ni majuscule
+		{
+			alphabet = 0;
+
+			while(alphabet != 24)
+			{
+				if(texte[n] == symboles[alphabet]) // Si c'est un symbole
+				{
+					caractere = 3; // On met la variable à 3 -> symboles
+				}
+
+				alphabet++;
+			}
+		}
+
+		switch(caractere) // On vérifie la variable
+		{
+			case 1: // Si minuscule
+
+				k = 26;
+				l = 0;
+
+				while(texte[n] != alphabetMin[l] && alphabetMin[l] != '\0')
+				{
+
+					l++;
+				}
+
+				k = l;
+
+				while(ascii != 0)
+				{
+					texte[n] = alphabetMin[k];
+
+					k--;
+
+					if(k == 0)
+					{
+						k = 26;
+					}
+
+					ascii--;
+				}
+				break;
+			case 2: // Si le caractère est en majuscule
+
+				k = 26;
+				l = 0;
+
+				while(texte[n] != alphabetMax[l] && alphabetMax[l] != '\0')
+				{
+
+					l++;
+				}
+
+				k = l;
+
+				while(ascii != 0)
+				{
+					texte[n] = alphabetMax[k];
+
+					k--;
+
+					if(k == 0)
+					{
+						k = 26;
+					}
+
+					ascii--;
+				}
+				break;
+			case 3: // Si le caractère est un symbole
+
+				k = 24;
+				l = 0;
+
+				while(texte[n] != symboles[l] && symboles[l] != '\0')
+				{
+
+					l++;
+				}
+
+				k = l;
+
+				while(ascii != 0)
+				{
+					texte[n] = symboles[k];
+
+					k--;
+
+					if(k == 0)
+					{
+						k = 24;
+					}
+
+					ascii--;
+				}
+				break;
+
+			// Si caractère inconnue on ne change rien (on pourrait rajouter un default pour mais flemme)
+		}
+
+		ascii = asciiDeux; // On remet ascii comme au début
+
+		n++;
+
+		caractere = 0; // Remet la variable caractère à 0 (Obvious is obvious)
+	}
+	
+	i = 0;
+
+	// Fin deuxième decryptage avec mot de passe
 
 	while(texte[i] != '\0') // Tant que ce n'est pas la fin du texte
 	{
@@ -1190,116 +1518,7 @@ void decryptage() // Fonction decryptage
 		i++;
 	}
 
-	// Début deuxième cryptage avec mot de passe
-
-	// Initialisation des variables
-	// Déclarations des variables servant à ce cryptage
-
-	i = 0;
-	n = 0;
-
-	int k = 0, l = 0;
-	int alphabet = 0, caractere = 0;
-	int asciiDeux = 0;
-
-	asciiDeux = ascii; // Variable servant à toujours avoir une save de ascii (ascii devant être modifié)
-
-	while(texte[i] != '\0') // Boucle pour avoir le nombre de caractères de texte
-	{
-		i++;
-	}
-
-	while(n != i)  // Tant qu'on à pas fait chaque caractère de la phrase à crypté
-	{
-		alphabet = 0; // Initialisation
-
-		while(alphabet != 26)
-		{
-			if(texte[n] == alphabetMin[alphabet]) // Si le caractère est minuscule
-			{
-				caractere = 1; // On met la variable à 1 -> pour les minuscules
-			}
-
-			alphabet++;
-		}
-
-		if(caractere != 1) // Si le caractère n'est pas minuscule
-		{
-			alphabet = 0;
-
-			while(alphabet != 26)
-			{
-				if(texte[n] == alphabetMax[alphabet]) // Si le caractère est en majuscule
-				{
-					caractere = 2; // On met la variable à 2 -> majuscules
-				}
-
-				alphabet++;
-			}
-		}
-
-		if(caractere != 1 && caractere != 2) // Si le caractère n'est ni minuscule ni majuscule
-		{
-			alphabet = 0;
-
-			while(alphabet != 24)
-			{
-				if(texte[n] == symboles[alphabet]) // Si c'est un symbole
-				{
-					caractere = 3; // On met la variable à 3 -> symboles
-				}
-
-				alphabet++;
-			}
-		}
-
-		switch(caractere) // On vérifie la variable
-		{
-			case 1: // Si minuscule
-
-				k = 0;
-				l = 0;
-
-				while(texte[n] != alphabetMin[l] && alphabetMin[l] != '\0')
-				{
-
-					l++;
-				}
-
-				k = k + l;
-
-				while(ascii != 0)
-				{
-					texte[n] = alphabetMin[k];
-
-					k++;
-
-					if(k == 26)
-					{
-						k = 0;
-					}
-
-					ascii--;
-				}
-				break;
-			case 2: // Si le caractère est en majuscule
-				break;
-			case 3: // Si le caractère est un symbole
-				break;
-
-			// Si caractère inconnue on ne change rien (on pourrait rajouter un default pour mais flemme)
-		}
-
-		ascii = asciiDeux; // On remet ascii comme au début
-
-		n++;
-
-		caractere = 0; // Remet la variable caractère à 0 (Obvious is obvious)
-	}
-
 	printf("%s\n", texte); // Affiche la phrase décryptée
-
-	// Fin deuxième cryptage avec mot de passe
 
 	printf("===============================================================================\n\n");
 
