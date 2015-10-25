@@ -1,5 +1,5 @@
 /*
-	Programme cryptage/decryptage by Skull & Bones
+	Programme chiffrement/dechiffrement by Skull & Bones
 
 						 		  ______   ___ ___  __    __  __        __
 								 /\     \ |\  \\  \|\ \  |\ \|\ \      |\ \
@@ -17,33 +17,45 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define TAILLE_ALPHABET_MIN 25
+#define TAILLE_ALPHABET_MAX 25
+#define TAILLE_SYMBOLES 25
+
 int initialisation(); // Fonction initialisation
 
 static void purger(void); // Enlever le retour à la ligne lors de la saisie
 
 static void clean (char *chaine); // Eviter le buffer overflow
 
-void cryptage(); // Fonction cryptage
+void chiffrement(); // Fonction cryptage
 
-void decryptage(); // Fonction decryptage
+void dechiffrement(); // Fonction decryptage
+
+void quitter();
 
 void affichage();
 
 int main() // Fonction principale
 {
-	int cryptageDecryptage = 0; // Variable cryptage/decryptage
+	int cryptageDecryptage = -1; // Variable cryptage/decryptage
 
-	cryptageDecryptage = initialisation();
-
-	switch(cryptageDecryptage) // Vérification variable cryptageDecryptage
+	do
 	{
-		case 0: // Si égal à 0
-			cryptage(); // Cryptage
-			break;
-		case 1: // Si égal à 1
-			decryptage(); // Décryptage
-			break;
-	}
+		cryptageDecryptage = initialisation();
+
+		switch(cryptageDecryptage) // Vérification variable cryptageDecryptage
+		{
+			case 0: // Si égal à 0
+				quitter(); // Quitter
+				break;
+			case 1: // Si égal à 1
+				chiffrement(); // Cryptage
+				break;
+			case 2: // Si égal à 2
+				dechiffrement(); // Décryptage
+				break;
+		}
+	} while(cryptageDecryptage != 0);
 
 	printf("\n"); // Retour à la ligne
 
@@ -57,12 +69,14 @@ int initialisation() // Fonction initialisation
 
 	affichage();
 
+	printf("\n\n   Mises à jour et nouveautés sur https://github.com/SkullAndBone/Cryptage-fr");
+
 	printf("\n\n================================================================================\n");
-	printf("\t\t\tProgramme de Cryptage/Decryptage\n");
+	printf("\t\t\tProgramme de Chiffrement/Dechiffrement\n");
 	printf("================================================================================\n");
 
 	printf("\n\n================================================================================\n");
-	printf("\t\t\t\t Crypter --> 0\n\t\t\t\tDecrypter --> 1\n"); // Demande cryptage/decryptage
+	printf("\t\t\t\t  Quitter -> 0\n\t\t\t\t Chiffrer --> 1\n\t\t\t\tDechiffrer --> 2\n"); // Demande cryptage/decryptage
 	printf("================================================================================\n\n");
 
 	printf("\n================================================================================\n");
@@ -84,11 +98,11 @@ int initialisation() // Fonction initialisation
 			}
 		} while(ret != 1); // Tant que ce n'est pas un nombre
 
-		if(nombre != 0 && nombre != 1) // Tant que nombre différent de 0 ou 1
+		if(nombre != 0 &&nombre != 1 && nombre != 2) // Tant que nombre différent de 0 ou 1
 		{
 			printf("\n"); // Retour à la ligne
 		}
-	} while(nombre != 0 && nombre != 1); // Tant que nombre différent de 0 ou 1
+	} while(nombre != 0 && nombre != 1 && nombre != 2); // Tant que nombre différent de 0 ou 1
 	printf("================================================================================\n\n");
 
 	affichage();
@@ -96,12 +110,15 @@ int initialisation() // Fonction initialisation
 	printf("\n\n================================================================================\n");
 	switch(nombre) // Vérification variable cryptageDecryptage
 	{
-		case 0: // Si égal à 0
-			printf("\t\t\t      ===== CRYPTAGE =====\n");
+		case 0:
+			printf("\t\t\t          ===== FIN =====\n");
+			break;
+		case 1: // Si égal à 1
+			printf("\t\t\t      ===== CHIFFREMENT =====\n");
 			break;
 
-		case 1: // Si égal à 1
-			printf("\t\t\t     ===== DECRYPTAGE =====\n");
+		case 2: // Si égal à 2
+			printf("\t\t\t     ===== DECHIFFREMENT =====\n");
 			break;
 	}
 	printf("================================================================================\n\n");
@@ -132,20 +149,18 @@ static void clean (char *chaine)
     }
 }
 
-void cryptage()
+void chiffrement()
 {
 	char texte[200];
 	int nombre = 0, ret = 0;
-	int i = 0, n = 0;
-	int nombre3 = 0;	
-	int nombre2 = 0;
-	int a = 0, b = 1;
+	int i = 0, n = 0;	
+	unsigned long nombre2 = 0;
 	char password[200];
 	unsigned int ascii = 0;
 
 	char alphabetMin[30] = "abcdefghijklmnopqrstuvwxyz\0";
 	char alphabetMax[30] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ\0";	
-	char symboles[30] = "123456789 -!().\'\"?/*+=:,\0";
+	char symboles[30] = "0123456789 -!().\'\"?/*+=:,>\0";
 
 	unsigned int testNombre = 50000000;
 	unsigned int nombreAscii = 0;
@@ -181,40 +196,19 @@ void cryptage()
 		{
 			do // Tant que ce n'est pas un nombre
 			{
-				printf("Entrez un chiffre pour crypter (entre 0 et 100) : ");
+				printf("Entrez un chiffre pour crypter (entre 0 et 1 000 000 000) : ");
 				fgets(texte, sizeof texte, stdin); // Saisi nombre
 
 				clean(texte); // Enlève le retour à la ligne
 
-				ret = sscanf(texte, "%d", &nombre3);
+				ret = sscanf(texte, "%ld", &nombre2);
 
 				if(ret != 1) // Tant que ce n'est pas un nombre
 				{
 					printf("\n"); // Retour à la ligne
 				}
 			} while(ret != 1); // Tant que ce n'est pas un nombre
-		} while(nombre3 < 0 || nombre3 > 250); // Tant que nombre différent de 0 ou 1
-
-		while(i != nombre3)
-		{
-			if(i != nombre3)
-			{
-				nombre2 = a;
-
-				a = a + b;
-
-				i++;	
-			}
-			
-			if(i != nombre3)
-			{
-				nombre2 = b;
-
-				b = a + b;
-
-				i++;
-			}
-		}
+		} while(nombre2 < 0 || nombre2 > 1000000000); // Tant que nombre différent de 0 ou 1
 
 		printf("================================================================================\n\n");
 
@@ -237,11 +231,6 @@ void cryptage()
 		if(nombreOk == 0)
 		{
 			printf("Erreur... Veuillez choisir un mot de passe et un nombre différent !\n\n");
-		}
-
-		else
-		{
-			printf("Ascii : %d\n\n", ascii);
 		}
 
 	} while (nombreOk != 1);
@@ -289,291 +278,47 @@ void cryptage()
 	printf("\n================================================================================\n");
 	printf("\t\t\t     ===== RESULTAT =====\n\n");
 
-	while(texte[i] != '\0') // Tant que ce n'est pas la fin du texte
-	{
-		i++; // Incrémentation i
-	}
+	// Chiffrement par substitution
 
-	if(i < 10) // Si i inférieur à 10
-	{
-		printf("\t\t\t\t   ");
-	}
-
-	else if(i < 20 && i > 10) // Si i compris entre 10 et 20
-	{
-		printf("\t\t\t\t");
-	}
-
-	else if(i < 30 && i > 20) // Si i compris entre 20 et 30
-	{
-		printf("\t\t\t   ");
-	}
-
-	else if(i < 40 && i > 30) // Si i compris entre 30 et 40
-	{
-		printf("\t\t     ");
-	}
-
-	else if(i < 50 && i > 40) // Si i compris entre 40 et 50
-	{
-		printf("\t\t");
-	}
-
-	else if(i < 60 && i > 50) // Si i compris entre 50 et 60
-	{
-		printf("\t     ");
-	}
-
-	else if(i < 70 && i > 60) // Si i compris entre 60 et 70
-	{
-		printf("\t");
-	}
-
+	int p = 0;
+	int boolAlphabet = 0;
 	i = 0;
 
 	while(texte[i] != '\0') // Tant que ce n'est pas la fin du texte
 	{
-		switch(texte[i]) // Vérification de la lettre
+		p = 0;
+		boolAlphabet = 0;
+
+		while(boolAlphabet != 1 && boolAlphabet != 2 && boolAlphabet != 3)
 		{
+			if(texte[i] == alphabetMin[p])
+			{
+				boolAlphabet = 1;
+			}
 
-			// MAJUSCULES
+			if(texte[i] == alphabetMax[p])
+			{
+				boolAlphabet = 2;
+			}
 
-			case 'A':
-				texte[i] = 'Z';
-				break;
-			case 'B':
-				texte[i] = 'Y';
-				break;
-			case 'C':
-				texte[i] = 'X';
-				break;
-			case 'D':
-				texte[i] = 'W';
-				break;
-			case 'E':
-				texte[i] = 'V';
-				break;
-			case 'F':
-				texte[i] = 'U';
-				break;
-			case 'G':
-				texte[i] = 'T';
-				break;
-			case 'H':
-				texte[i] = 'S';
-				break;
-			case 'I':
-				texte[i] = 'R';
-				break;
-			case 'J':
-				texte[i] = 'Q';
-				break;
-			case 'K':
-				texte[i] = 'P';
-				break;
-			case 'L':
-				texte[i] = 'O';
-				break;
-			case 'M':
-				texte[i] = 'N';
-				break;
-			case 'N':
-				texte[i] = 'M';
-				break;
-			case 'O':
-				texte[i] = 'L';
-				break;
-			case 'P':
-				texte[i] = 'K';
-				break;
-			case 'Q':
-				texte[i] = 'J';
-				break;
-			case 'R':
-				texte[i] = 'I';
-				break;
-			case 'S':
-				texte[i] = 'H';
-				break;
-			case 'T':
-				texte[i] = 'G';
-				break;
-			case 'U':
-				texte[i] = 'F';
-				break;
-			case 'V':
-				texte[i] = 'E';
-				break;
-			case 'W':
-				texte[i] = 'D';
-				break;
-			case 'X':
-				texte[i] = 'C';
-				break;
-			case 'Y':
-				texte[i] = 'B';
-				break;
-			case 'Z':
-				texte[i] = 'A';
-				break;
+			if(texte[i] == symboles[p])
+			{
+				boolAlphabet = 3;
+			}
 
-			// MINUSCULES
-			
-			case 'a':
-				texte[i] = 'z';
-				break;
-			case 'b':
-				texte[i] = 'y';
-				break;
-			case 'c':
-				texte[i] = 'x';
-				break;
-			case 'd':
-				texte[i] = 'w';
-				break;
-			case 'e':
-				texte[i] = 'v';
-				break;
-			case 'f':
-				texte[i] = 'u';
-				break;
-			case 'g':
-				texte[i] = 't';
-				break;
-			case 'h':
-				texte[i] = 's';
-				break;
-			case 'i':
-				texte[i] = 'r';
-				break;
-			case 'j':
-				texte[i] = 'q';
-				break;
-			case 'k':
-				texte[i] = 'p';
-				break;
-			case 'l':
-				texte[i] = 'o';
-				break;
-			case 'm':
-				texte[i] = 'n';
-				break;
-			case 'n':
-				texte[i] = 'm';
-				break;
-			case 'o':
-				texte[i] = 'l';
-				break;
-			case 'p':
-				texte[i] = 'k';
-				break;
-			case 'q':
-				texte[i] = 'j';
-				break;
-			case 'r':
-				texte[i] = 'i';
-				break;
-			case 's':
-				texte[i] = 'h';
-				break;
-			case 't':
-				texte[i] = 'g';
-				break;
-			case 'u':
-				texte[i] = 'f';
-				break;
-			case 'v':
-				texte[i] = 'e';
-				break;
-			case 'w':
-				texte[i] = 'd';
-				break;
-			case 'x':
-				texte[i] = 'c';
-				break;
-			case 'y':
-				texte[i] = 'b';
-				break;
-			case 'z':
-				texte[i] = 'a';
-				break;
+			p++;
+		}
 
-			// AUTRES
-
-	    	case ' ':
-				texte[i] = ',';
+		switch(boolAlphabet)
+		{
+			case 1:
+				texte[i] = alphabetMin[TAILLE_ALPHABET_MIN-(p-1)];
 				break;
-			case '1':
-				texte[i] = '4';
+			case 2:
+				texte[i] = alphabetMax[TAILLE_ALPHABET_MAX-(p-1)];
 				break;
-			case '2':
-				texte[i] = ':';
-				break;
-			case '3':
-				texte[i] = '(';
-				break;
-			case '4':
-				texte[i] = '5';
-				break;
-			case '5':
-				texte[i] = '\"';
-				break;
-			case '6':
-				texte[i] = '8';
-				break;
-			case '7':
-				texte[i] = '=';
-				break;
-			case '8':
-				texte[i] = '+';
-				break;
-			case '9':
-				texte[i] = '*';
-				break;
-			case ',':
-				texte[i] = '/';
-				break;
-			case '\'':
-				texte[i] = '?';
-				break;
-			case '.':
-				texte[i] = '\'';
-				break;
-			case '/':
-				texte[i] = '9';
-				break;
-			case '?':
-				texte[i] = '7';
-				break;
-			case '!':
-				texte[i] = '.';
-				break;
-			case '*':
-				texte[i] = ')';
-				break;
-			case '-':
-				texte[i] = '6';
-				break;
-			case '+':
-				texte[i] = '!';
-				break;
-			case '\"':
-				texte[i] = '1';
-				break;
-			case '(':
-				texte[i] = '-';
-				break;
-			case ')':
-				texte[i] = ' ';
-				break;
-			case '=':
-				texte[i] = '2';
-				break;
-			case ':':
-				texte[i] = '3';
-				break;
-			default:
-				texte[i] = '$';
+			case 3:
+				texte[i] = symboles[TAILLE_SYMBOLES-(p-1)];
 				break;
 		}
 
@@ -632,7 +377,7 @@ void cryptage()
 		{
 			alphabet = 0;
 
-			while(alphabet != 24)
+			while(alphabet != 26)
 			{
 				if(texte[n] == symboles[alphabet]) // Si c'est un symbole
 				{
@@ -718,7 +463,7 @@ void cryptage()
 
 					k++;
 
-					if(k == 24)
+					if(k == 26)
 					{
 						k = 0;
 					}
@@ -741,7 +486,10 @@ void cryptage()
 
 	// Fin deuxième cryptage avec mot de passe
 
-	printf("===============================================================================\n\n");
+	printf("===============================================================================\n");
+
+	printf("\n\nAppuyez sur entrée pour continuer...");
+	scanf("%c", &texte[0]);
 
 	// Ecriture fichier
 
@@ -767,6 +515,7 @@ void cryptage()
 			fprintf(fichier, "================================================================================\n");
 
 			fprintf(fichier, "\nPhrase cryptée : \n\n%s", texte);
+			fprintf(fichier, "\n\nMises à jour et nouveautés sur https://github.com/SkullAndBone/Cryptage-fr");
 		}
 
 		else // Si erreur d'ouverture
@@ -778,22 +527,20 @@ void cryptage()
 	}
 }
 
-void decryptage() // Fonction decryptage
+void dechiffrement() // Fonction decryptage
 {
 	char texte[1000];
 	char password[200];
 	char texteDecrypt[1000];
 	int nombre = 0, ret = 0;
 	int i = 0, n = 0;
-	int nombre3 = 0;	
 	int nombre2 = 0;
-	int a = 0, b = 1;
 	unsigned int ascii = 0;
 	int fichierDecryptage = 0;
 
 	char alphabetMin[30] = "abcdefghijklmnopqrstuvwxyz\0";
 	char alphabetMax[30] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ\0";	
-	char symboles[30] = "123456789 -!().\'\"?/*+=:,\0";
+	char symboles[30] = "0123456789 -!().\'\"?/*+=:,>\0";
 
 	FILE* fichierDecrypt = NULL;
 
@@ -831,40 +578,19 @@ void decryptage() // Fonction decryptage
 		{
 			do // Tant que ce n'est pas un nombre
 			{
-				printf("Entrez un chiffre pour décrypter (entre 0 et 100) : ");
+				printf("Entrez un chiffre pour décrypter (entre 0 et 1 000 000 000) : ");
 				fgets(texte, sizeof texte, stdin); // Saisi nombre
 
 				clean(texte); // Enlève le retour à la ligne
 
-				ret = sscanf(texte, "%d", &nombre3);
+				ret = sscanf(texte, "%d", &nombre2);
 
 				if(ret != 1) // Tant que ce n'est pas un nombre
 				{
 					printf("\n"); // Retour à la ligne
 				}
 			} while(ret != 1); // Tant que ce n'est pas un nombre
-		} while(nombre3 < 0 || nombre3 > 250); // Tant que nombre différent de 0 ou 1
-
-		while(i != nombre3)
-		{
-			if(i != nombre3)
-			{
-				nombre2 = a;
-
-				a = a + b;
-
-				i++;	
-			}
-			
-			if(i != nombre3)
-			{
-				nombre2 = b;
-
-				b = a + b;
-
-				i++;
-			}
-		}
+		} while(nombre2 < 0 || nombre2 > 1000000000); // Tant que nombre différent de 0 ou 1
 
 		printf("================================================================================\n\n");
 
@@ -1121,7 +847,7 @@ void decryptage() // Fonction decryptage
 		{
 			alphabet = 0;
 
-			while(alphabet != 24)
+			while(alphabet != 26)
 			{
 				if(texte[n] == symboles[alphabet]) // Si c'est un symbole
 				{
@@ -1153,9 +879,9 @@ void decryptage() // Fonction decryptage
 
 					k--;
 
-					if(k == 0)
+					if(k == -1)
 					{
-						k = 26;
+						k = 25;
 					}
 
 					ascii--;
@@ -1180,9 +906,9 @@ void decryptage() // Fonction decryptage
 
 					k--;
 
-					if(k == 0)
+					if(k == -1)
 					{
-						k = 26;
+						k = 25;
 					}
 
 					ascii--;
@@ -1190,7 +916,7 @@ void decryptage() // Fonction decryptage
 				break;
 			case 3: // Si le caractère est un symbole
 
-				k = 24;
+				k = 26;
 				l = 0;
 
 				while(texte[n] != symboles[l] && symboles[l] != '\0')
@@ -1201,7 +927,7 @@ void decryptage() // Fonction decryptage
 
 				k = l;
 
-				while(ascii != 0)
+				while(ascii != -1)
 				{
 					texte[n] = symboles[k];
 
@@ -1209,7 +935,7 @@ void decryptage() // Fonction decryptage
 
 					if(k == 0)
 					{
-						k = 24;
+						k = 25;
 					}
 
 					ascii--;
@@ -1228,291 +954,48 @@ void decryptage() // Fonction decryptage
 	
 	i = 0;
 
-	// Fin deuxième decryptage avec mot de passe
+	// Fin premier decryptage avec mot de passe
 
-	while(texte[i] != '\0') // Tant que ce n'est pas la fin du texte
-	{
-		i++; // Incrémentation i
-	}
-
-	if(i < 10) // Si i inférieur à 10
-	{
-		printf("\t\t\t\t   ");
-	}
-
-	else if(i < 20 && i > 10) // Si i compris entre 10 et 20
-	{
-		printf("\t\t\t\t");
-	}
-
-	else if(i < 30 && i > 20) // Si i compris entre 20 et 30
-	{
-		printf("\t\t\t   ");
-	}
-
-	else if(i < 40 && i > 30) // Si i compris entre 30 et 40
-	{
-		printf("\t\t     ");
-	}
-
-	else if(i < 50 && i > 40) // Si i compris entre 40 et 50
-	{
-		printf("\t\t");
-	}
-
-	else if(i < 60 && i > 50) // Si i compris entre 50 et 60
-	{
-		printf("\t     ");
-	}
-
-	else if(i < 70 && i > 60) // Si i compris entre 60 et 70
-	{
-		printf("\t");
-	}
-
+	int p = 0;
+	int boolAlphabet = 0;
 	i = 0;
 
 	while(texte[i] != '\0') // Tant que ce n'est pas la fin du texte
 	{
-		switch(texte[i]) // Vérification de la lettre
+		p = 0;
+		boolAlphabet = 0;
+
+		while(boolAlphabet != 1 && boolAlphabet != 2 && boolAlphabet != 3)
 		{
+			if(texte[i] == alphabetMin[p])
+			{
+				boolAlphabet = 1;
+			}
 
-			// MAJUSCULES
+			if(texte[i] == alphabetMax[p])
+			{
+				boolAlphabet = 2;
+			}
 
-			case 'A':
-				texte[i] = 'Z';
-				break;
-			case 'B':
-				texte[i] = 'Y';
-				break;
-			case 'C':
-				texte[i] = 'X';
-				break;
-			case 'D':
-				texte[i] = 'W';
-				break;
-			case 'E':
-				texte[i] = 'V';
-				break;
-			case 'F':
-				texte[i] = 'U';
-				break;
-			case 'G':
-				texte[i] = 'T';
-				break;
-			case 'H':
-				texte[i] = 'S';
-				break;
-			case 'I':
-				texte[i] = 'R';
-				break;
-			case 'J':
-				texte[i] = 'Q';
-				break;
-			case 'K':
-				texte[i] = 'P';
-				break;
-			case 'L':
-				texte[i] = 'O';
-				break;
-			case 'M':
-				texte[i] = 'N';
-				break;
-			case 'N':
-				texte[i] = 'M';
-				break;
-			case 'O':
-				texte[i] = 'L';
-				break;
-			case 'P':
-				texte[i] = 'K';
-				break;
-			case 'Q':
-				texte[i] = 'J';
-				break;
-			case 'R':
-				texte[i] = 'I';
-				break;
-			case 'S':
-				texte[i] = 'H';
-				break;
-			case 'T':
-				texte[i] = 'G';
-				break;
-			case 'U':
-				texte[i] = 'F';
-				break;
-			case 'V':
-				texte[i] = 'E';
-				break;
-			case 'W':
-				texte[i] = 'D';
-				break;
-			case 'X':
-				texte[i] = 'C';
-				break;
-			case 'Y':
-				texte[i] = 'B';
-				break;
-			case 'Z':
-				texte[i] = 'A';
-				break;
+			if(texte[i] == symboles[p])
+			{
+				boolAlphabet = 3;
+			}
 
-			// MINUSCULES
-			
-			case 'a':
-				texte[i] = 'z';
-				break;
-			case 'b':
-				texte[i] = 'y';
-				break;
-			case 'c':
-				texte[i] = 'x';
-				break;
-			case 'd':
-				texte[i] = 'w';
-				break;
-			case 'e':
-				texte[i] = 'v';
-				break;
-			case 'f':
-				texte[i] = 'u';
-				break;
-			case 'g':
-				texte[i] = 't';
-				break;
-			case 'h':
-				texte[i] = 's';
-				break;
-			case 'i':
-				texte[i] = 'r';
-				break;
-			case 'j':
-				texte[i] = 'q';
-				break;
-			case 'k':
-				texte[i] = 'p';
-				break;
-			case 'l':
-				texte[i] = 'o';
-				break;
-			case 'm':
-				texte[i] = 'n';
-				break;
-			case 'n':
-				texte[i] = 'm';
-				break;
-			case 'o':
-				texte[i] = 'l';
-				break;
-			case 'p':
-				texte[i] = 'k';
-				break;
-			case 'q':
-				texte[i] = 'j';
-				break;
-			case 'r':
-				texte[i] = 'i';
-				break;
-			case 's':
-				texte[i] = 'h';
-				break;
-			case 't':
-				texte[i] = 'g';
-				break;
-			case 'u':
-				texte[i] = 'f';
-				break;
-			case 'v':
-				texte[i] = 'e';
-				break;
-			case 'w':
-				texte[i] = 'd';
-				break;
-			case 'x':
-				texte[i] = 'c';
-				break;
-			case 'y':
-				texte[i] = 'b';
-				break;
-			case 'z':
-				texte[i] = 'a';
-				break;
+			p++;
+		}
 
-			// AUTRES
-
-			case '3':
-				texte[i] = ':';
+		switch(boolAlphabet)
+		{
+			case 1:
+				texte[i] = alphabetMin[TAILLE_ALPHABET_MIN-(p-1)];
 				break;
-			case '2':
-				texte[i] = '=';
+			case 2:
+				texte[i] = alphabetMax[TAILLE_ALPHABET_MAX-(p-1)];
 				break;
-			case ' ':
-				texte[i] = ')';
-	    		break;
-	    	case '-':
-	    		texte[i] = '(';
-	    		break;
-	    	case '1':
-	    		texte[i] = '\"';
-	    		break;
-	    	case '!':
-	    		texte[i] = '+';
-	    		break;
-	    	case '6':
-	    		texte[i] = '-';
-	    		break;
-	    	case ')':
-	    		texte[i] = '*';
-	    		break;
-	    	case '.':
-	    		texte[i] = '!';
-	    		break;
-	    	case '7':
-	    		texte[i] = '?';
-	    		break;
-	    	case '9':
-	    		texte[i] = '/';
-	    		break;
-	    	case '\'':
-	    		texte[i] = '.';
-	    		break;
-	    	case '?':
-	    		texte[i] = '\'';
-	    		break;
-	    	case '/':
-	    		texte[i] = ',';
-	    		break;
-	    	case '*':
-	    		texte[i] = '9';
-	    		break;
-	    	case '+':
-	    		texte[i] = '8';
-	    		break;
-	    	case '=':
-	    		texte[i] = '7';
-	    		break;
-	    	case '8':
-	    		texte[i] = '6';
-	    		break;
-	    	case '\"':
-	    		texte[i] = '5';
-	    		break;
-	    	case '5':
-	    		texte[i] = '4';
-	    		break;
-	    	case '(':
-	    		texte[i] = '3';
-	    		break;
-	    	case ':':
-	    		texte[i] = '2';
-	    		break;
-	    	case '4':
-	    		texte[i] = '1';
-	    		break;
-	    	case ',':
-	    		texte[i] = ' ';
-	    		break;
+			case 3:
+				texte[i] = symboles[TAILLE_SYMBOLES-(p-1)];
+				break;
 		}
 
 		i++;
@@ -1520,7 +1003,12 @@ void decryptage() // Fonction decryptage
 
 	printf("%s\n", texte); // Affiche la phrase décryptée
 
-	printf("===============================================================================\n\n");
+	// Fin deuxième cryptage avec mot de passe
+
+	printf("===============================================================================\n");
+
+	printf("\n\nAppuyez sur entrée pour continuer...");
+	scanf("%c", &texte[0]);
 
 	// Ecriture fichier
 
@@ -1546,6 +1034,7 @@ void decryptage() // Fonction decryptage
 			fprintf(fichier, "================================================================================\n");
 
 			fprintf(fichier, "\nPhrase décryptée : \n\n%s", texte);
+			fprintf(fichier, "\n\nMises à jour et nouveautés sur https://github.com/SkullAndBone/Cryptage-fr");
 		}
 
 		else // Si erreur d'ouverture
@@ -1560,6 +1049,11 @@ void decryptage() // Fonction decryptage
 	{
 		fclose(fichierDecrypt);
 	}
+}
+
+void quitter()
+{
+	printf("\n   Mises à jour et nouveautés sur https://github.com/SkullAndBone/Cryptage-fr\n\n");
 }
 
 void affichage()
